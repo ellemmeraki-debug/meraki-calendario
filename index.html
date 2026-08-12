@@ -484,18 +484,6 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     <div class="form-row">
       <label>Nº Bling</label>
       <input id="f-bling" placeholder="Ex: 123456789" type="text">
-    </div> <label>Cliente *</label>
-        <input id="f-cliente" placeholder="Nome do cliente">
-      </div>
-      <div class="form-row">
-        <label>Contato</label>
-        <input id="f-contato" placeholder="WhatsApp ou e-mail">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <label>Nº Bling</label>
-      <input id="f-bling" placeholder="Ex: 123456789" type="text">
     </div>
 
     <div class="form-grid2">
@@ -793,7 +781,42 @@ function updatePecaTotals() {
     totalEl.innerHTML =
       `📊 <strong>Total geral</strong><br>
        Custo: R$ ${totalCusto.toLocaleString('pt-BR',{minimumFractionDigits:2})} &nbsp;|&nbsp;
-       Venda: R$ ${totalVenda.toLocaleString('pt-BR',{minimumFractionDigits:2tab==='calendario')||(i===2&&tab==='calc')));
+       Venda: R$ ${totalVenda.toLocaleString('pt-BR',{minimumFractionDigits:2})} &nbsp;|&nbsp;
+       Lucro: <span style="color:var(--c-pronta);">R$ ${lucro.toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>`;
+  } else {
+    totalEl.style.display = 'none';
+  }
+}
+
+function addPeca() {
+  formPecas = readFormPecas();
+  formPecas.push({ produto:'', descricao:'', custo:0, markup:18 });
+  renderFormPecas();
+  // Scroll to new item
+  setTimeout(() => {
+    const items = document.querySelectorAll('.peca-item');
+    if (items.length) items[items.length-1].scrollIntoView({behavior:'smooth', block:'center'});
+  }, 50);
+}
+
+function removePeca(idx) {
+  formPecas = readFormPecas();
+  formPecas.splice(idx, 1);
+  renderFormPecas();
+}
+
+// HTML escape helper
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// ═══════════════ TABS ═══════════════
+function switchTab(tab) {
+  document.getElementById('view-lista').style.display      = tab==='lista'      ? '' : 'none';
+  document.getElementById('view-calendario').style.display = tab==='calendario' ? '' : 'none';
+  document.getElementById('view-calc').style.display       = tab==='calc'       ? '' : 'none';
+  document.getElementById('fab-btn').style.display         = tab==='calc'       ? 'none' : '';
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>
+    b.classList.toggle('active',
+      (i===0&&tab==='lista')||(i===1&&tab==='calendario')||(i===2&&tab==='calc')));
   if (tab==='calendario') renderCalendar();
 }
 
@@ -904,11 +927,11 @@ function openDetail(id) {
   // Build pieces HTML
   const pecasHTML = pecas.map((x, i) => {
     const c = parseFloat(x.custo)||0, m = parseFloat(x.markup)||18;
-    const vp = (c*m).toLocaleString('pt-BR',{minimumFractionDigits:});
-    const lp = ((c*m)-c).toLocaleString('pt-BR',{minimumFractionDigits:});
+    const vp = (c*m).toLocaleString('pt-BR',{minimumFractionDigits:2});
+    const lp = ((c*m)-c).toLocaleString('pt-BR',{minimumFractionDigits:2});
     return `<div class="peca-detail-item">
       <div class="peca-detail-name">${x.produto?`<span style="color:var(--brand);">${x.produto}</span>: `:''} ${x.descricao}</div>
-      <div class="peca-detail-meta">Custo R$ ${c.toLocaleString('pt-BR',{minimumFractionDigits:})} &nbsp;×${m}</div>
+      <div class="peca-detail-meta">Custo R$ ${c.toLocaleString('pt-BR',{minimumFractionDigits:2})} &nbsp;×${m}</div>
       <div class="peca-detail-venda">→ R$ ${vp} &nbsp;<span style="color:var(--c-pronta);font-size:.74rem;">lucro R$ ${lp}</span></div>
     </div>`;
   }).join('');
@@ -1261,7 +1284,7 @@ function renderInsumosChips() {
   const container = document.getElementById('insumos-chips');
   if (!container) return;
   container.innerHTML = insumosChips.map((chip, i) => {
-    const valStr = chip.valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:});
+    const valStr = chip.valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
     return `<button class="insumo-chip" onclick="calcAddInsumo(${chip.valor})" title="Clique para somar R$${valStr} aos insumos">
       ${chip.nome} <span class="chip-val">+R$${valStr}</span>
     </button>`;
