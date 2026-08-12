@@ -307,14 +307,49 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .peca-detail-name { font-weight:700; font-size:.88rem; margin-bottom:3px; }
 .peca-detail-meta { font-size:.74rem; color:var(--muted); }
 .peca-detail-venda { font-size:.82rem; color:var(--brand); font-weight:700; margin-top:2px; }
+
+/* ── LOGIN OVERLAY ── */
+#login-overlay { position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px; }
+.login-box { text-align:center;max-width:320px;width:100%; }
+.login-logo { font-size:3rem;margin-bottom:16px; }
+.login-title { font-size:1.4rem;font-weight:800;color:var(--brand);margin-bottom:8px; }
+.login-sub { font-size:.86rem;color:var(--muted);margin-bottom:28px;line-height:1.5; }
+.btn-google { display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:13px 22px;font-size:.95rem;font-weight:600;cursor:pointer;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.08);width:100%;justify-content:center;font-family:inherit; }
+.btn-google:hover { box-shadow:0 4px 14px rgba(0,0,0,.13); }
+.login-error { margin-top:14px;font-size:.8rem;color:var(--c-atrasado);display:none;background:#fff3f3;border-radius:8px;padding:9px 12px; }
+.user-bar { font-size:.68rem;opacity:.75;display:flex;align-items:center;gap:6px; }
+.btn-logout { background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:3px 9px;font-size:.68rem;cursor:pointer;font-family:inherit;font-weight:600; }
+.btn-logout:hover { background:rgba(255,255,255,.35); }
 </style>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">🏺</div>
+    <h1 class="login-title">Meraki — Pedidos</h1>
+    <p class="login-sub">Acesso restrito.<br>Entre com sua conta Google autorizada.</p>
+    <button class="btn-google" onclick="loginGoogle()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
+      Entrar com Google
+    </button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
 
 <div class="app-header">
   <div class="top-row">
     <div><h1>🏺 Meraki — Pedidos</h1><div class="sub">Peças personalizadas em porcelana</div></div>
-    <div style="display:flex;gap:8px;">
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="user-bar" id="user-bar" style="display:none;">
+        <span id="user-name"></span>
+        <button class="btn-logout" onclick="logout()">Sair</button>
+      </div>
       <button class="btn-icon" onclick="exportCSV()" title="Exportar CSV">📥</button>
     </div>
   </div>
@@ -562,9 +597,81 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 </div>
 
 <script>
-// ═══════════════ DATA ═══════════════
-const STORAGE_KEY = 'meraki_pedidos_v3';
+// ═══════════════ FIREBASE ═══════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAeix0szv0SrIrRUbQ_GwR6Yu6WGxrVrFs",
+  authDomain: "meraki-pedidos.firebaseapp.com",
+  projectId: "meraki-pedidos",
+  storageBucket: "meraki-pedidos.firebasestorage.app",
+  messagingSenderId: "276110016444",
+  appId: "1:276110016444:web:5642d2145dd783596475b9"
+};
 
+const EMAILS_AUTORIZADOS = [
+  'ellem.meraki@gmail.com',
+  'gabriela@merakiporcelanas.com.br',
+  'lauren.marketingmeraki@gmail.com',
+  'janaina.merakihomedecor@gmail.com',
+  'merakidecorhouse@gmail.com',
+];
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+function loginGoogle() {
+  document.getElementById('login-error').style.display = 'none';
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(err => {
+    const el = document.getElementById('login-error');
+    el.style.display = '';
+    el.textContent = 'Erro ao entrar: ' + err.message;
+  });
+}
+
+function logout() { auth.signOut(); }
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    if (!EMAILS_AUTORIZADOS.includes(user.email)) {
+      const el = document.getElementById('login-error');
+      el.style.display = '';
+      el.textContent = `❌ ${user.email} não tem acesso. Contate a Ellem.`;
+      auth.signOut();
+      document.getElementById('login-overlay').style.display = 'flex';
+      return;
+    }
+    document.getElementById('login-overlay').style.display = 'none';
+    const bar = document.getElementById('user-bar');
+    bar.style.display = 'flex';
+    document.getElementById('user-name').textContent = user.displayName || user.email;
+    initFirestoreListeners();
+  } else {
+    document.getElementById('login-overlay').style.display = 'flex';
+    document.getElementById('user-bar').style.display = 'none';
+  }
+});
+
+let _unsubPedidos = null, _unsubInsumos = null;
+function initFirestoreListeners() {
+  if (_unsubPedidos) _unsubPedidos();
+  _unsubPedidos = db.collection('pedidos').onSnapshot(snap => {
+    pedidos = snap.docs.map(doc => migratePedido({...doc.data(), id: doc.id}));
+    refresh();
+  });
+  if (_unsubInsumos) _unsubInsumos();
+  _unsubInsumos = db.collection('config').doc('insumos').onSnapshot(doc => {
+    if (doc.exists && doc.data().chips) {
+      insumosChips = doc.data().chips;
+    } else {
+      insumosChips = [{ nome: 'Tinta', valor: 0.50 }];
+    }
+    renderInsumosChips();
+    calcUpdate();
+  });
+}
+
+// ═══════════════ DATA ═══════════════
 // Migrate old format (flat peca/custo/markup) → new format (pecas array)
 function migratePedido(p) {
   if (!p.pecas || !Array.isArray(p.pecas) || p.pecas.length === 0) {
@@ -578,7 +685,7 @@ function migratePedido(p) {
   return p;
 }
 
-let pedidos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').map(migratePedido);
+let pedidos = [];
 let filtroAtivo = 'todos';
 let currentDetailId = null;
 let calYear  = new Date().getFullYear();
@@ -587,7 +694,7 @@ let selectedDay = null;
 let fotoBase64 = null;
 let formPecas  = []; // in-memory form state for pieces
 
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(pedidos)); }
+function save() { /* dados salvos diretamente no Firestore por cada operação */ }
 
 const STATUS_LABEL = {
   aguardando:'⏳ Aguardando', producao:'🔨 Em produção',
@@ -828,7 +935,7 @@ function setFilter(el, status) {
   renderLista();
 }
 
-// ═══════════════ LISTA ═══════════════
+// ═══════════════ LISTA ══════════════════════════════
 function renderLista() {
   const q = (document.getElementById('search-input').value||'').toLowerCase();
   let lista = pedidos.filter(p=>{
@@ -1048,16 +1155,17 @@ function salvarPedido() {
     foto:         fotoBase64 || (antigo ? antigo.foto : null) || null,
     criadoEm:     editId ? (antigo ? antigo.criadoEm : undefined) : new Date().toISOString(),
   };
-  const idx=pedidos.findIndex(p=>p.id===id);
-  if (idx>=0) pedidos[idx]=novo; else pedidos.push(novo);
-  save(); closeModal(); refresh();
+  db.collection('pedidos').doc(id).set(novo)
+    .then(() => closeModal())
+    .catch(err => alert('Erro ao salvar: ' + err.message));
 }
 
 function deletarPedido() {
   const id=document.getElementById('f-id').value;
   if (!id||!confirm('Excluir este pedido?')) return;
-  pedidos=pedidos.filter(p=>p.id!==id);
-  save(); closeModal(); refresh();
+  db.collection('pedidos').doc(id).delete()
+    .then(() => closeModal())
+    .catch(err => alert('Erro ao excluir: ' + err.message));
 }
 
 // ═══════════════ CALENDAR ═══════════════
@@ -1271,13 +1379,11 @@ document.getElementById('modal-form').addEventListener('click',e=>{if(e.target==
 document.getElementById('modal-detail').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDetail();});
 
 // ═══════════════ COLA DE INSUMOS ═══════════════
-const INSUMOS_KEY = 'meraki_insumos_cola';
-let insumosChips = JSON.parse(localStorage.getItem(INSUMOS_KEY) || 'null') || [
-  { nome: 'Tinta', valor: 0.50 }
-];
+let insumosChips = [{ nome: 'Tinta', valor: 0.50 }];
 
 function saveInsumosChips() {
-  localStorage.setItem(INSUMOS_KEY, JSON.stringify(insumosChips));
+  db.collection('config').doc('insumos').set({ chips: insumosChips })
+    .catch(err => console.error('Erro ao salvar insumos:', err));
 }
 
 function renderInsumosChips() {
@@ -1321,11 +1427,8 @@ function salvarInsumoCola() {
   document.getElementById('insumo-custom-form').classList.remove('open');
 }
 
-renderInsumosChips();
-calcUpdate(); // inicializa com forno/embalagem pre-preenchidos
-
 function refresh(){ updateKPIs(); renderLista(); }
-refresh();
+// renderInsumosChips e calcUpdate são chamados via onSnapshot do Firestore
 </script>
 </body>
 </html>
