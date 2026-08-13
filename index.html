@@ -169,11 +169,14 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
 .slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
 .toggle input:checked + .slider { background:var(--c-fixa); }
 .toggle input:checked + .slider:before { transform:translateX(18px); }
-.photo-upload-area { border:2px dashed var(--border); border-radius:10px; padding:14px; text-align:center; cursor:pointer; background:var(--bg); }
+.photo-upload-area { border:2px dashed var(--border); border-radius:10px; padding:12px 14px; text-align:center; cursor:pointer; background:var(--bg); }
 .photo-upload-area:hover { border-color:var(--brand); }
 .photo-upload-area input[type=file] { display:none; }
-.photo-preview { max-width:100%; max-height:160px; border-radius:8px; margin-top:8px; display:none; }
-.photo-remove  { font-size:.72rem; color:var(--c-atrasado); cursor:pointer; margin-top:4px; display:none; }
+.fotos-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.foto-thumb { position:relative; width:72px; height:72px; border-radius:8px; overflow:hidden; border:1px solid var(--border); background:#f5ede8; flex-shrink:0; }
+.foto-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.foto-thumb .pdf-icon { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:1.6rem; }
+.foto-thumb .rm-thumb { position:absolute; top:2px; right:2px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; width:18px; height:18px; font-size:.62rem; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; }
 .modal-actions { display:flex; gap:9px; margin-top:18px; }
 .btn-primary   { flex:1; background:var(--brand); color:#fff; border:none; padding:12px; border-radius:12px; font-size:.88rem; font-weight:700; cursor:pointer; }
 .btn-primary:hover { background:var(--brand-dark); }
@@ -560,12 +563,11 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     </div>
 
     <div class="form-row" style="margin-top:12px;">
-      <label>📎 Esboço / Referência</label>
+      <label>📎 Esboço / Referência <span style="font-size:.72rem;color:var(--muted);">(imagens ou PDF, sem limite)</span></label>
       <div class="photo-upload-area" onclick="document.getElementById('f-foto-input').click()">
-        <div id="photo-placeholder" style="font-size:.82rem;color:var(--muted);">📷 Toque para anexar foto do esboço</div>
-        <img id="photo-preview" class="photo-preview">
-        <div id="photo-remove" class="photo-remove" onclick="removeFoto(event)">✕ Remover foto</div>
-        <input type="file" id="f-foto-input" accept="image/*" onchange="handleFoto(event)">
+        <div id="photo-placeholder" style="font-size:.82rem;color:var(--muted);">📷 Toque para adicionar fotos ou PDF</div>
+        <div id="fotos-grid" class="fotos-grid"></div>
+        <input type="file" id="f-foto-input" accept="image/*,application/pdf" multiple onchange="handleFotos(event)">
       </div>
     </div>
 
@@ -691,7 +693,7 @@ let currentDetailId = null;
 let calYear  = new Date().getFullYear();
 let calMonth = new Date().getMonth();
 let selectedDay = null;
-let fotoBase64 = null;
+let fotosForm = []; // array of {dataUrl, type, name}
 let formPecas  = []; // in-memory form state for pieces
 
 function save() { /* dados salvos diretamente no Firestore por cada operação */ }
@@ -772,26 +774,66 @@ function calcDates() {
   }
 }
 
-// ── Photo ──
-function handleFoto(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    fotoBase64 = ev.target.result;
-    document.getElementById('photo-preview').src = fotoBase64;
-    document.getElementById('photo-preview').style.display = '';
-    document.getElementById('photo-remove').style.display = '';
-    document.getElementById('photo-placeholder').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
+// ── Photos (multi, PDF, compressed) ──
+function compressImage(file, maxPx, quality) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else        { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
-function removeFoto(e) {
-  e.stopPropagation(); fotoBase64 = null;
-  document.getElementById('photo-preview').src = '';
-  document.getElementById('photo-preview').style.display = 'none';
-  document.getElementById('photo-remove').style.display = 'none';
-  document.getElementById('photo-placeholder').style.display = '';
-  document.getElementById('f-foto-input').value = '';
+async function handleFotos(e) {
+  const files = Array.from(e.target.files); if (!files.length) return;
+  for (const file of files) {
+    let dataUrl, type = file.type, name = file.name;
+    if (file.type === 'application/pdf') {
+      dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = ev => res(ev.target.result); r.readAsDataURL(file); });
+    } else {
+      dataUrl = await compressImage(file, 900, 0.65);
+      type = 'image/jpeg';
+    }
+    fotosForm.push({ dataUrl, type, name });
+  }
+  e.target.value = '';
+  renderFotosForm();
+}
+function renderFotosForm() {
+  const grid = document.getElementById('fotos-grid');
+  const ph   = document.getElementById('photo-placeholder');
+  grid.innerHTML = '';
+  fotosForm.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'foto-thumb';
+    if (f.type === 'application/pdf') {
+      div.innerHTML = `<div class="pdf-icon" title="${f.name}">📄</div>`;
+    } else {
+      div.innerHTML = `<img src="${f.dataUrl}" alt="${f.name}">`;
+    }
+    const btn = document.createElement('button');
+    btn.className = 'rm-thumb'; btn.textContent = '✕';
+    btn.onclick = ev => { ev.stopPropagation(); removerFoto(i); };
+    div.appendChild(btn);
+    grid.appendChild(div);
+  });
+  ph.style.display = fotosForm.length ? 'none' : '';
+}
+function removerFoto(idx) {
+  fotosForm.splice(idx, 1);
+  renderFotosForm();
 }
 
 // ── KPIs ──
@@ -935,7 +977,7 @@ function setFilter(el, status) {
   renderLista();
 }
 
-// ═══════════════ LISTA ══════════════════════════════
+// ═══════════════ LISTA ═══════════════
 function renderLista() {
   const q = (document.getElementById('search-input').value||'').toLowerCase();
   let lista = pedidos.filter(p=>{
@@ -1005,7 +1047,7 @@ function cardHTML(p) {
       </div>
       <div class="order-flags">
         ${p.dataFixa?'<span class="flag-fixa">🖊️ FIXA</span>':''}
-        ${p.foto?'<span title="Tem esboço">📎</span>':''}
+        ${(p.foto||(p.fotos&&p.fotos.length))?'<span title="Tem esboço">📎</span>':''}
         ${pecas.length>1?`<span style="font-size:.62rem;background:#e8f0fe;color:#1a56db;border-radius:8px;padding:2px 7px;font-weight:700;">${pecas.length} peças</span>`:''}
         <span class="badge ${st}">${STATUS_LABEL[st]||st}</span>
       </div>
@@ -1070,7 +1112,17 @@ function openDetail(id) {
         <div class="detail-item lucro" style="grid-column:1/-1;"><div class="d-label">Lucro total</div><div class="d-val">R$ ${totals.lucro.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div></div>
       </div>
     </div>`:''}
-    ${p.foto?`<div class="detail-section"><h3>📎 Esboço</h3><img src="${p.foto}" class="detail-photo"></div>`:''}
+    ${(()=>{
+      const all=[];
+      if(p.foto&&!(p.fotos&&p.fotos.length)) all.push({dataUrl:p.foto,type:'image/jpeg',name:'foto'});
+      if(p.fotos&&p.fotos.length) p.fotos.forEach(f=>all.push(f));
+      if(!all.length) return '';
+      const items=all.map(f=>f.type==='application/pdf'
+        ?`<a href="${f.dataUrl}" target="_blank" download="${f.name}" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--text);"><span style="font-size:2.2rem;">📄</span><span style="font-size:.68rem;">${f.name}</span></a>`
+        :`<img src="${f.dataUrl}" class="detail-photo" style="max-width:160px;max-height:160px;border-radius:8px;object-fit:cover;">`
+      ).join('');
+      return `<div class="detail-section"><h3>📎 Esboço / Referências</h3><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">${items}</div></div>`;
+    })()}
     ${p.anamnese?`<div class="detail-section"><h3>📝 Anamnese</h3><div style="font-size:.86rem;line-height:1.55;background:var(--bg);border-radius:8px;padding:10px 12px;">${p.anamnese}</div></div>`:''}
   `;
   document.getElementById('modal-detail').classList.add('open');
@@ -1080,9 +1132,8 @@ function editFromDetail() { closeDetail(); if (currentDetailId) openModal(curren
 
 // ═══════════════ FORM MODAL ═══════════════
 function openModal(id) {
-  fotoBase64 = null;
-  ['photo-preview','photo-remove'].forEach(x=>{document.getElementById(x).style.display='none';});
-  document.getElementById('photo-placeholder').style.display='';
+  fotosForm = [];
+  renderFotosForm();
   document.getElementById('f-foto-input').value='';
   document.getElementById('limit-warn').style.display='none';
 
@@ -1098,13 +1149,12 @@ function openModal(id) {
     document.getElementById('f-data').value    = p.dataEntrega;
     document.getElementById('f-fixa').checked  = !!p.dataFixa;
     document.getElementById('f-anamnese').value= p.anamnese||'';
-    if (p.foto) {
-      fotoBase64=p.foto;
-      document.getElementById('photo-preview').src=p.foto;
-      document.getElementById('photo-preview').style.display='';
-      document.getElementById('photo-remove').style.display='';
-      document.getElementById('photo-placeholder').style.display='none';
+    if (p.fotos && p.fotos.length) {
+      fotosForm = p.fotos.map(f=>({...f}));
+    } else if (p.foto) {
+      fotosForm = [{dataUrl:p.foto, type:'image/jpeg', name:'foto'}];
     }
+    renderFotosForm();
     formPecas = (p.pecas||[]).map(x=>({...x}));
     if (formPecas.length === 0) formPecas = [{produto:'',descricao:'',custo:0,markup:18}];
     document.getElementById('btn-delete-wrap').style.display='';
@@ -1152,7 +1202,7 @@ function salvarPedido() {
     dataEntrega:  data,
     dataFixa:     document.getElementById('f-fixa').checked,
     anamnese:     document.getElementById('f-anamnese').value.trim(),
-    foto:         fotoBase64 || (antigo ? antigo.foto : null) || null,
+    fotos:        fotosForm.length ? fotosForm : (antigo && antigo.fotos ? antigo.fotos : (antigo && antigo.foto ? [{dataUrl:antigo.foto,type:'image/jpeg',name:'foto'}] : [])),
     criadoEm:     editId ? (antigo ? antigo.criadoEm : undefined) : new Date().toISOString(),
   };
   db.collection('pedidos').doc(id).set(novo)
@@ -1317,7 +1367,7 @@ function exportCSV() {
   });
   const csv=[cols.join(','),...rows].join('\n');
   const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download=`meraki_pedidos_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
 }
