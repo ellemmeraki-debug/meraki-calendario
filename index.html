@@ -902,13 +902,13 @@ function renderFormPecas() {
   const list = document.getElementById('pecas-list');
   let html = '';
   formPecas.forEach((peca, i) => {
-    const vendaVal = peca.custo > 0 ? (peca.custo * (peca.markup||18)).toLocaleString('pt-BR',{minimumFractionDigits:}) : '—';
+    const vendaVal = peca.custo > 0 ? (peca.custo * (peca.markup||18)).toLocaleString('pt-BR',{minimumFractionDigits:2}) : '—';
     html += `
     <div class="peca-item">
       <div class="peca-item-header">
         <span class="peca-num">Peça ${i + 1}</span>
         ${formPecas.length > 1
-          ? `<button type="button" class="peca-remove-btn" onclick="removePeca(${i})">✕ Remover</span>`
+          ? `<button type="button" class="peca-remove-btn" onclick="removePeca(${i})">✕ Remover</button>`
           : ''}
       </div>
       <div class="form-grid2">
@@ -1108,11 +1108,11 @@ function openDetail(id) {
   // Build pieces HTML
   const pecasHTML = pecas.map((x, i) => {
     const c = parseFloat(x.custo)||0, m = parseFloat(x.markup)||18;
-    const vp = (c*m).toLocaleString('pt-BR',{minimumFractionDigits:});
-    const lp = ((c*m)-c).toLocaleString('pt-BR',{minimumFractionDigits:});
+    const vp = (c*m).toLocaleString('pt-BR',{minimumFractionDigits:2});
+    const lp = ((c*m)-c).toLocaleString('pt-BR',{minimumFractionDigits:2});
     return `<div class="peca-detail-item">
       <div class="peca-detail-name">${x.produto?`<span style="color:var(--brand);">${x.produto}</span>: `:''} ${x.descricao}</div>
-      <div class="peca-detail-meta">Custo R$ ${c.toLocaleString('pt-BR',{minimumFractionDigits:})} &nbsp;×${m}</div>
+      <div class="peca-detail-meta">Custo R$ ${c.toLocaleString('pt-BR',{minimumFractionDigits:2})} &nbsp;×${m}</div>
       <div class="peca-detail-venda">→ R$ ${vp} &nbsp;<span style="color:var(--c-pronta);font-size:.74rem;">lucro R$ ${lp}</span></div>
     </div>`;
   }).join('');
@@ -1344,7 +1344,7 @@ function renderWeek(week, hoje) {
     const p = bar.p;
     const st = getStatus(p);
     const color     = p.dataFixa ? '#c8a000' : (STATUS_COLOR[st]||STATUS_COLOR[p.status]||'#9a7060');
-    const textColor = p.dataFixa ? '#faf0a0' : '#fff';
+    const textColor = p.dataFixa ? '#a75500' : '#fff';
     const leftPct   = (bar.firstCol/7*100).toFixed(2);
     const widthPct  = ((bar.lastCol-bar.firstCol+1)/7*100).toFixed(2);
     const topPx     = 36 + bar.slot*13;
