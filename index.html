@@ -9,6 +9,7 @@
 :root {
   --brand: #c0634a; --brand-light: #d4785e; --brand-dark: #9a4a35;
   --bg: #fdf6f0; --surface: #fff; --border: #f0ddd5; --text: #3a2a20; --muted: #9a7060;
+  --navy: #1e2d4e;
   --c-aguardando: #9a7060;
   --c-producao:   #e07b20;
   --c-queima:     #7b52b8;
@@ -329,6 +330,54 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
   font-weight:600; align-items:center; gap:10px;
 }
 .agenda-banner.visible { display:flex; }
+
+/* ── WORKSHOPS ── */
+.sub-tabs { display:flex; gap:6px; margin:14px 14px 0; flex-wrap:wrap; }
+.sub-tab-btn { border:1.5px solid var(--border); background:var(--surface); color:var(--muted); padding:7px 14px; border-radius:20px; font-size:.8rem; font-weight:600; cursor:pointer; transition:all .15s; }
+.sub-tab-btn:hover { border-color:var(--brand); color:var(--brand); }
+.sub-tab-btn.active { background:var(--brand); color:#fff; border-color:var(--brand); }
+.ws-panel { display:none; padding:14px; }
+.ws-panel.active { display:block; }
+.calc-grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; align-items:end; margin-bottom:12px; }
+.calc-sublabel { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:4px 0 10px; }
+.calc-mat-sub { padding:9px 12px; background:#fdf0ea; border:1.5px solid var(--border); border-radius:8px; font-size:.9rem; font-weight:700; color:var(--brand); font-variant-numeric:tabular-nums; text-align:right; }
+.calc-fixed { border:1.5px solid var(--border); border-radius:8px; padding:9px 12px; background:#fdf0ea; color:var(--muted); font-size:.88rem; }
+.calc-fixed strong { color:var(--brand); }
+.calc-note { font-size:.78rem; color:var(--muted); margin-top:4px; }
+.calc-hr { border:none; border-top:1px solid var(--border); margin:14px 0; }
+.toggle-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px; margin-bottom:10px; background:#fdf9f7; transition:all .2s; }
+.toggle-row.on { border-color:var(--brand); background:#fdf0ea; }
+.toggle-label { flex:1; font-size:.9rem; font-weight:600; min-width:140px; }
+.toggle-label span { font-size:.78rem; color:var(--muted); font-weight:400; }
+.toggle-sub { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.toggle-sub-val { font-size:.85rem; color:var(--muted); white-space:nowrap; }
+.toggle-sub-val strong { color:var(--text); }
+.ws-switch { position:relative; width:40px; height:22px; flex-shrink:0; }
+.ws-switch input { opacity:0; width:0; height:0; }
+.ws-slider { position:absolute; inset:0; background:var(--border); border-radius:22px; cursor:pointer; transition:.2s; }
+.ws-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; bottom:3px; background:white; border-radius:50%; transition:.2s; }
+.ws-switch input:checked + .ws-slider { background:var(--brand); }
+.ws-switch input:checked + .ws-slider::before { transform:translateX(18px); }
+.auto-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px; }
+.extra-row { display:grid; grid-template-columns:2fr 1fr 1fr 32px; gap:8px; align-items:end; margin-bottom:8px; }
+.btn-add-ws { display:inline-flex; align-items:center; gap:6px; border:1.5px dashed var(--brand); border-radius:8px; padding:7px 14px; background:transparent; color:var(--brand); font-family:'Segoe UI',system-ui,sans-serif; font-size:.82rem; font-weight:600; cursor:pointer; transition:background .2s; margin-top:4px; }
+.btn-add-ws:hover { background:#fdf0ea; }
+.btn-rm-ws { border:none; background:none; color:var(--muted); cursor:pointer; font-size:1.3rem; line-height:1; border-radius:6px; padding:2px 5px; transition:color .2s; align-self:flex-end; padding-bottom:6px; }
+.btn-rm-ws:hover { color:#c0392b; }
+.total-custo-ws { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dark) 100%); border-radius:10px; margin-bottom:16px; color:#fff; }
+.total-lbl-ws { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.85; }
+.total-num-ws { font-size:1.8rem; font-weight:700; font-variant-numeric:tabular-nums; }
+.prec-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+.calc-result-box-ws { background:#1e2d4e; border-radius:12px; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.res-item { text-align:center; }
+.res-lbl { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:rgba(255,255,255,.55); margin-bottom:6px; }
+.res-val { font-size:1.55rem; font-weight:700; color:#fff; font-variant-numeric:tabular-nums; }
+.res-item.hl .res-val { color:#f5c08a; }
+.res-item.ok .res-val { color:#7dce8c; }
+.ws-calc-input { width:100%; border:1.5px solid var(--border); border-radius:8px; padding:9px 12px; font-family:'Segoe UI',system-ui,sans-serif; font-size:.95rem; color:var(--text); background:#fdf9f7; transition:border-color .2s; -moz-appearance:textfield; }
+.ws-calc-input::-webkit-inner-spin-button,.ws-calc-input::-webkit-outer-spin-button { -webkit-appearance:none; }
+.ws-calc-input:focus { outline:none; border-color:var(--brand); }
+@media(max-width:520px){ .calc-grid3,.prec-row,.auto-row { grid-template-columns:1fr; } .extra-row { grid-template-columns:1fr 1fr; } .calc-result-box-ws { grid-template-columns:1fr; } }
 </style>
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -366,6 +415,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     <button class="tab-btn active" onclick="switchTab('lista')">📋 Lista</button>
     <button class="tab-btn" onclick="switchTab('calendario')">📅 Calendário</button>
     <button class="tab-btn" onclick="switchTab('calc')">🧮 Calculadora</button>
+    <button class="tab-btn" onclick="switchTab('workshops')">🎨 Workshops</button>
   </div>
 </div>
 
@@ -387,7 +437,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     <input type="text" id="search-input" placeholder="🔍 Buscar cliente, peça ou Bling..." oninput="renderLista()">
   </div>
   <div class="filter-bar">
-    <div class="chip active" onclick="setFilter(this,'todos')">Todos</div>
+    <div class="chip active" onclick="setFilter(this,'todos')">Ativas</div>
     <div class="chip" onclick="setFilter(this,'atrasado')">⚠️ Atrasados</div>
     <div class="chip" onclick="setFilter(this,'fixa')">🖊️ Data fixa</div>
     <div class="chip" onclick="setFilter(this,'aguardando')">⏳ Aguardando</div>
@@ -574,7 +624,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     </div>
 
     <div class="form-row" style="margin-top:12px;">
-      <label>📎 Esboço / Referência <span style="font-size:.72rem;color:var(--muted);">(imagens ou PDF, sem limite)</span></label>
+      <label>📎 Esboço / Referência <span style="font-size:.72rem;color:var(--muted);">(fotos, vídeos ou PDF — sem limite)</span></label>
       <div class="photo-upload-area" onclick="document.getElementById('f-foto-input').click()">
         <div id="photo-placeholder" style="font-size:.82rem;color:var(--muted);">📷 Toque para adicionar fotos ou PDF</div>
         <div id="fotos-grid" class="fotos-grid"></div>
@@ -596,6 +646,282 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     </div>
   </div>
 </div>
+
+<!-- WORKSHOPS VIEW -->
+<div id="view-workshops" style="display:none;padding-bottom:40px;">
+
+  <div class="sub-tabs">
+    <button class="sub-tab-btn active" onclick="showWs('ws-conv',this)">🔥 Forno Convencional</button>
+    <button class="sub-tab-btn" onclick="showWs('ws-prof',this)">⚡ Forno Profissional</button>
+    <button class="sub-tab-btn" onclick="showWs('ws-pres',this)">🎨 Aula Presencial</button>
+  </div>
+
+  <!-- ─── CONVENCIONAL ─── -->
+  <div id="ws-conv" class="ws-panel active">
+    <div class="calc-card">
+      <div class="calc-section-title">Setup do Workshop</div>
+      <div class="calc-grid2">
+        <div><label class="calc-input-group"><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Número de Alunas</span>
+          <input class="ws-calc-input" type="number" id="c-alu" min="1" value="10" oninput="calcC()"></label></div>
+        <div><label class="calc-input-group"><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Horas de Workshop</span>
+          <input class="ws-calc-input" type="number" id="c-h" min="1" value="4" oninput="calcC()"></label></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Materiais</div>
+      <div class="calc-sublabel">Porcelana Branca</div>
+      <div class="calc-grid3">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Quantidade</span>
+          <input class="ws-calc-input" type="number" id="c-pq" min="0" value="10" oninput="calcC()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Custo Unit. R$</span>
+          <input class="ws-calc-input" type="number" id="c-pv" min="0" step=".01" value="0" oninput="calcC()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Subtotal</span>
+          <div class="calc-mat-sub" id="c-ps">R$ 0,00</div></div>
+      </div>
+      <div class="calc-sublabel">Tintas</div>
+      <div class="calc-grid3">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Quantidade</span>
+          <input class="ws-calc-input" type="number" id="c-tq" min="0" value="5" oninput="calcC()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Custo Unit. R$</span>
+          <input class="ws-calc-input" type="number" id="c-tv" min="0" step=".01" value="0" oninput="calcC()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Subtotal</span>
+          <div class="calc-mat-sub" id="c-ts">R$ 0,00</div></div>
+      </div>
+      <div class="calc-grid2">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Pincéis — Reposição</span>
+          <div class="calc-fixed">R$ 50,00 fixo</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Sacola + Seda</span>
+          <div class="calc-fixed">R$ 12,00 × alunas = <strong id="c-sac">R$ 0,00</strong></div></div>
+      </div>
+      <hr class="calc-hr">
+      <div class="calc-sublabel">Materiais Adicionais</div>
+      <div id="c-extras"></div>
+      <button class="btn-add-ws" onclick="wsAddRow('c-extras','calcC')">＋ Adicionar material</button>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Artistas</div>
+      <div class="toggle-row" id="c-gr">
+        <label class="ws-switch"><input type="checkbox" id="c-gon" checked onchange="calcC()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Gabi — Artista Mestre <span>(R$ 400/h)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Horas</span>
+            <input class="ws-calc-input" type="number" id="c-gh" min="0" value="4" style="width:72px" oninput="calcC()"></div>
+          <div class="toggle-sub-val">= <strong id="c-gsub">R$ 1.600,00</strong></div>
+        </div>
+      </div>
+      <div class="toggle-row" id="c-ar">
+        <label class="ws-switch"><input type="checkbox" id="c-aon" onchange="calcC()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Assistentes <span>(R$ 300 cada)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Quantidade</span>
+            <input class="ws-calc-input" type="number" id="c-an" min="1" value="1" style="width:72px" oninput="calcC()"></div>
+          <div class="toggle-sub-val">= <strong id="c-asub">R$ 0,00</strong></div>
+        </div>
+      </div>
+      <div class="auto-row">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Almoço (R$ 50 × artistas)</span>
+          <div class="calc-fixed" id="c-alm">R$ 0,00</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Transporte (R$ 50 × assist.)</span>
+          <div class="calc-fixed" id="c-trp">R$ 0,00</div></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Precificação</div>
+      <div class="total-custo-ws"><span class="total-lbl-ws">Custo Total</span><span class="total-num-ws" id="c-tot">R$ 0,00</span></div>
+      <div class="prec-row">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Margem Desejada (%)</span>
+          <input class="ws-calc-input" type="number" id="c-mg" min="0" max="99" step=".1" value="44" oninput="calcC()">
+          <div class="calc-note">Venda = custo ÷ (1 − margem)</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Valor de Venda (editável)</span>
+          <input class="ws-calc-input" type="number" id="c-venda" step=".01" placeholder="Calculado automaticamente" oninput="calcCfV()">
+          <div class="calc-note">Ajuste manualmente se precisar</div></div>
+      </div>
+      <div class="calc-result-box-ws">
+        <div class="res-item hl"><div class="res-lbl">Valor de Venda</div><div class="res-val" id="c-rv">—</div></div>
+        <div class="res-item ok"><div class="res-lbl">Lucro</div><div class="res-val" id="c-rl">—</div></div>
+        <div class="res-item"><div class="res-lbl">Por Aluna</div><div class="res-val" id="c-ra">—</div></div>
+      </div>
+    </div>
+  </div><!-- /ws-conv -->
+
+  <!-- ─── PROFISSIONAL ─── -->
+  <div id="ws-prof" class="ws-panel">
+    <div class="calc-card">
+      <div class="calc-section-title">Setup do Workshop</div>
+      <div class="calc-grid2">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Número de Alunas</span>
+          <input class="ws-calc-input" type="number" id="p-alu" min="1" value="10" oninput="calcP()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Horas de Workshop</span>
+          <input class="ws-calc-input" type="number" id="p-h" min="1" value="4" oninput="calcP()"></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Materiais</div>
+      <div class="calc-sublabel">Porcelana Branca</div>
+      <div class="calc-grid3">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Quantidade</span>
+          <input class="ws-calc-input" type="number" id="p-pq" min="0" value="10" oninput="calcP()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Custo Unit. R$</span>
+          <input class="ws-calc-input" type="number" id="p-pv" min="0" step=".01" value="0" oninput="calcP()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Subtotal</span>
+          <div class="calc-mat-sub" id="p-ps">R$ 0,00</div></div>
+      </div>
+      <div class="calc-grid2">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Materiais — Reposição</span>
+          <div class="calc-fixed">R$ 50,00 fixo</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Queima Forno Profissional</span>
+          <div class="calc-fixed">R$ 1,50 × alunas = <strong id="p-que">R$ 0,00</strong></div></div>
+      </div>
+      <div class="calc-grid2">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Sacola + Seda</span>
+          <div class="calc-fixed">R$ 12,00 × alunas = <strong id="p-sac">R$ 0,00</strong></div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Artistas</div>
+      <div class="toggle-row" id="p-gr">
+        <label class="ws-switch"><input type="checkbox" id="p-gon" checked onchange="calcP()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Gabi — Artista Mestre <span>(R$ 400/h)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Horas</span>
+            <input class="ws-calc-input" type="number" id="p-gh" min="0" value="4" style="width:72px" oninput="calcP()"></div>
+          <div class="toggle-sub-val">= <strong id="p-gsub">R$ 1.600,00</strong></div>
+        </div>
+      </div>
+      <div class="toggle-row" id="p-mr">
+        <label class="ws-switch"><input type="checkbox" id="p-mon" checked onchange="calcP()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Marcela — Artista Mestre <span>(R$ 400/h)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Horas</span>
+            <input class="ws-calc-input" type="number" id="p-mh" min="0" value="4" style="width:72px" oninput="calcP()"></div>
+          <div class="toggle-sub-val">= <strong id="p-msub">R$ 1.600,00</strong></div>
+        </div>
+      </div>
+      <div class="toggle-row" id="p-ar">
+        <label class="ws-switch"><input type="checkbox" id="p-aon" onchange="calcP()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Assistentes <span>(R$ 300 cada)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Quantidade</span>
+            <input class="ws-calc-input" type="number" id="p-an" min="1" value="1" style="width:72px" oninput="calcP()"></div>
+          <div class="toggle-sub-val">= <strong id="p-asub">R$ 0,00</strong></div>
+        </div>
+      </div>
+      <div class="auto-row">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Almoço (R$ 50 × artistas)</span>
+          <div class="calc-fixed" id="p-alm">R$ 0,00</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Transporte (R$ 50 × assist.)</span>
+          <div class="calc-fixed" id="p-trp">R$ 0,00</div></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Precificação</div>
+      <div class="total-custo-ws"><span class="total-lbl-ws">Custo Total</span><span class="total-num-ws" id="p-tot">R$ 0,00</span></div>
+      <div class="prec-row">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Margem Desejada (%)</span>
+          <input class="ws-calc-input" type="number" id="p-mg" min="0" max="99" step=".1" value="44" oninput="calcP()">
+          <div class="calc-note">Venda = custo ÷ (1 − margem)</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Valor de Venda (editável)</span>
+          <input class="ws-calc-input" type="number" id="p-venda" step=".01" placeholder="Calculado automaticamente" oninput="calcPfV()">
+          <div class="calc-note">Ajuste manualmente se precisar</div></div>
+      </div>
+      <div class="calc-result-box-ws">
+        <div class="res-item hl"><div class="res-lbl">Valor de Venda</div><div class="res-val" id="p-rv">—</div></div>
+        <div class="res-item ok"><div class="res-lbl">Lucro</div><div class="res-val" id="p-rl">—</div></div>
+        <div class="res-item"><div class="res-lbl">Por Aluna</div><div class="res-val" id="p-ra">—</div></div>
+      </div>
+    </div>
+  </div><!-- /ws-prof -->
+
+  <!-- ─── PRESENCIAL ─── -->
+  <div id="ws-pres" class="ws-panel">
+    <div class="calc-card">
+      <div class="calc-section-title">Setup da Aula</div>
+      <div class="calc-grid2">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Número de Alunas</span>
+          <input class="ws-calc-input" type="number" id="pr-alu" min="1" value="10" oninput="calcPr()"></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Horas de Aula</span>
+          <input class="ws-calc-input" type="number" id="pr-h" min="1" value="4" oninput="calcPr()"></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Materiais</div>
+      <div class="calc-sublabel">Porcelanas</div>
+      <div id="pr-porcs"></div>
+      <button class="btn-add-ws" onclick="wsAddPorcelana()">＋ Adicionar porcelana</button>
+      <hr class="calc-hr">
+      <div class="calc-grid2">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Materiais — Reposição</span>
+          <div class="calc-fixed">R$ 50,00 fixo</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Queima Forno Profissional</span>
+          <div class="calc-fixed">R$ 1,50 × alunas = <strong id="pr-que">R$ 0,00</strong></div></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Artistas</div>
+      <div class="toggle-row" id="pr-gr">
+        <label class="ws-switch"><input type="checkbox" id="pr-gon" checked onchange="calcPr()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Gabi — Artista Mestre <span>(R$ 400/h)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Horas</span>
+            <input class="ws-calc-input" type="number" id="pr-gh" min="0" value="4" style="width:72px" oninput="calcPr()"></div>
+          <div class="toggle-sub-val">= <strong id="pr-gsub">R$ 1.600,00</strong></div>
+        </div>
+      </div>
+      <div class="toggle-row" id="pr-mr">
+        <label class="ws-switch"><input type="checkbox" id="pr-mon" checked onchange="calcPr()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Marcela — Artista Mestre <span>(R$ 400/h)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Horas</span>
+            <input class="ws-calc-input" type="number" id="pr-mh" min="0" value="4" style="width:72px" oninput="calcPr()"></div>
+          <div class="toggle-sub-val">= <strong id="pr-msub">R$ 1.600,00</strong></div>
+        </div>
+      </div>
+      <div class="toggle-row" id="pr-ar">
+        <label class="ws-switch"><input type="checkbox" id="pr-aon" onchange="calcPr()"><span class="ws-slider"></span></label>
+        <div class="toggle-label">Assistentes <span>(R$ 300 cada)</span></div>
+        <div class="toggle-sub">
+          <div><span style="font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Quantidade</span>
+            <input class="ws-calc-input" type="number" id="pr-an" min="1" value="1" style="width:72px" oninput="calcPr()"></div>
+          <div class="toggle-sub-val">= <strong id="pr-asub">R$ 0,00</strong></div>
+        </div>
+      </div>
+      <div class="calc-grid2" style="margin-top:12px">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Comidinhas para Aula</span>
+          <div class="calc-fixed">R$ 200,00 fixo</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Estrutura Ateliê</span>
+          <div class="calc-fixed">R$ 200,00 fixo</div></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-section-title">Precificação</div>
+      <div class="total-custo-ws"><span class="total-lbl-ws">Custo Total</span><span class="total-num-ws" id="pr-tot">R$ 0,00</span></div>
+      <div class="prec-row">
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Margem Desejada (%)</span>
+          <input class="ws-calc-input" type="number" id="pr-mg" min="0" max="99" step=".1" value="44" oninput="calcPr()">
+          <div class="calc-note">Venda = custo ÷ (1 − margem)</div></div>
+        <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Valor de Venda (editável)</span>
+          <input class="ws-calc-input" type="number" id="pr-venda" step=".01" placeholder="Calculado automaticamente" oninput="calcPrfV()">
+          <div class="calc-note">Ajuste manualmente se precisar</div></div>
+      </div>
+      <div class="calc-result-box-ws">
+        <div class="res-item hl"><div class="res-lbl">Valor de Venda</div><div class="res-val" id="pr-rv">—</div></div>
+        <div class="res-item ok"><div class="res-lbl">Lucro</div><div class="res-val" id="pr-rl">—</div></div>
+        <div class="res-item"><div class="res-lbl">Por Aluna</div><div class="res-val" id="pr-ra">—</div></div>
+      </div>
+    </div>
+  </div><!-- /ws-pres -->
+
+</div><!-- /view-workshops -->
 
 <!-- DETAIL MODAL -->
 <div class="modal-overlay" id="modal-detail">
@@ -629,8 +955,8 @@ const EMAILS_AUTORIZADOS = [
 ];
 
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db   = firebase.firestore();
+const auth    = firebase.auth();
+const db      = firebase.firestore();
 
 function loginGoogle() {
   document.getElementById('login-error').style.display = 'none';
@@ -831,14 +1157,14 @@ function compressImage(file, maxPx, quality) {
 async function handleFotos(e) {
   const files = Array.from(e.target.files); if (!files.length) return;
   for (const file of files) {
-    let dataUrl, type = file.type, name = file.name;
-    if (file.type === 'application/pdf') {
-      dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = ev => res(ev.target.result); r.readAsDataURL(file); });
+    const type = file.type, name = file.name;
+    if (type === 'application/pdf') {
+      const dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = ev => res(ev.target.result); r.readAsDataURL(file); });
+      fotosForm.push({ dataUrl, type, name });
     } else {
-      dataUrl = await compressImage(file, 900, 0.65);
-      type = 'image/jpeg';
+      const dataUrl = await compressImage(file, 900, 0.65);
+      fotosForm.push({ dataUrl, type: 'image/jpeg', name });
     }
-    fotosForm.push({ dataUrl, type, name });
   }
   e.target.value = '';
   renderFotosForm();
@@ -853,7 +1179,8 @@ function renderFotosForm() {
     if (f.type === 'application/pdf') {
       div.innerHTML = `<div class="pdf-icon" title="${f.name}">📄</div>`;
     } else {
-      div.innerHTML = `<img src="${f.dataUrl}" alt="${f.name}">`;
+      const src = f.dataUrl || f.url || '';
+      div.innerHTML = `<img src="${src}" alt="${f.name}">`;
     }
     const btn = document.createElement('button');
     btn.className = 'rm-thumb'; btn.textContent = '✕';
@@ -994,10 +1321,11 @@ function switchTab(tab) {
   document.getElementById('view-lista').style.display      = tab==='lista'      ? '' : 'none';
   document.getElementById('view-calendario').style.display = tab==='calendario' ? '' : 'none';
   document.getElementById('view-calc').style.display       = tab==='calc'       ? '' : 'none';
-  document.getElementById('fab-btn').style.display         = tab==='calc'       ? 'none' : '';
+  document.getElementById('view-workshops').style.display  = tab==='workshops'  ? '' : 'none';
+  document.getElementById('fab-btn').style.display         = (tab==='calc'||tab==='workshops') ? 'none' : '';
   document.querySelectorAll('.tab-btn').forEach((b,i)=>
     b.classList.toggle('active',
-      (i===0&&tab==='lista')||(i===1&&tab==='calendario')||(i===2&&tab==='calc')));
+      (i===0&&tab==='lista')||(i===1&&tab==='calendario')||(i===2&&tab==='calc')||(i===3&&tab==='workshops')));
   if (tab==='calendario') renderCalendar();
 }
 
@@ -1016,6 +1344,7 @@ function renderLista() {
     const st = getStatus(p);
     if (filtroAtivo==='atrasado' && st!=='atrasado') return false;
     if (filtroAtivo==='fixa' && !p.dataFixa) return false;
+    if (filtroAtivo==='todos' && st==='entregue') return false;   // Ativas: oculta entregues
     if (!['todos','atrasado','fixa'].includes(filtroAtivo) && st!==filtroAtivo) return false;
     if (q) {
       const pecaText = (p.pecas||[]).map(x=>(x.produto+' '+x.descricao).toLowerCase()).join(' ');
@@ -1149,10 +1478,11 @@ function openDetail(id) {
       if(p.foto&&!(p.fotos&&p.fotos.length)) all.push({dataUrl:p.foto,type:'image/jpeg',name:'foto'});
       if(p.fotos&&p.fotos.length) p.fotos.forEach(f=>all.push(f));
       if(!all.length) return '';
-      const items=all.map(f=>f.type==='application/pdf'
-        ?`<a href="${f.dataUrl}" target="_blank" download="${f.name}" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--text);"><span style="font-size:2.2rem;">📄</span><span style="font-size:.68rem;">${f.name}</span></a>`
-        :`<img src="${f.dataUrl}" class="detail-photo" style="max-width:160px;max-height:160px;border-radius:8px;object-fit:cover;">`
-      ).join('');
+      const items=all.map(f=>{
+        if(f.type==='application/pdf')
+          return `<a href="${f.dataUrl||f.url}" target="_blank" download="${f.name}" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--text);"><span style="font-size:2.2rem;">📄</span><span style="font-size:.68rem;">${f.name}</span></a>`;
+        return `<img src="${f.dataUrl||f.url}" class="detail-photo" style="max-width:160px;max-height:160px;border-radius:8px;object-fit:cover;">`;
+      }).join('');
       return `<div class="detail-section"><h3>📎 Esboço / Referências</h3><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">${items}</div></div>`;
     })()}
     ${p.anamnese?`<div class="detail-section"><h3>📝 Anamnese</h3><div style="font-size:.86rem;line-height:1.55;background:var(--bg);border-radius:8px;padding:10px 12px;">${p.anamnese}</div></div>`:''}
@@ -1511,6 +1841,144 @@ function salvarInsumoCola() {
 
 function refresh(){ updateKPIs(); renderLista(); }
 // renderInsumosChips e calcUpdate são chamados via onSnapshot do Firestore
+
+// ═══════════════ WORKSHOPS ═══════════════
+(function(){
+  const wsN = id => parseFloat(document.getElementById(id)?.value) || 0;
+  const wsCk = id => document.getElementById(id)?.checked ?? false;
+  const wsBrl = v => v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+  const wsSet = (id, t) => { const e=document.getElementById(id); if(e) e.textContent = t; };
+  let costC = 0, costP = 0, costPr = 0;
+  let wsRowN = 0, wsPorcN = 0;
+
+  function wsArtistRow(rowId, isOn) { document.getElementById(rowId)?.classList.toggle('on', isOn); }
+
+  function wsShowResults(prefix, cost, margem, alunas) {
+    const m = Math.min(Math.max(margem, 0), 99.9) / 100;
+    const venda = cost / (1 - m);
+    const lucro = venda - cost;
+    wsSet(prefix+'rv', wsBrl(venda));
+    wsSet(prefix+'rl', wsBrl(lucro));
+    wsSet(prefix+'ra', wsBrl(alunas > 0 ? venda / alunas : 0));
+    const ve = document.getElementById(prefix+'venda');
+    if (ve && ve !== document.activeElement) ve.value = venda.toFixed(2);
+  }
+  function wsShowFromVenda(prefix, cost, venda, alunas) {
+    wsSet(prefix+'rv', wsBrl(venda));
+    wsSet(prefix+'rl', wsBrl(venda - cost));
+    wsSet(prefix+'ra', wsBrl(alunas > 0 ? venda / alunas : 0));
+  }
+
+  function wsRowsTotal(containerId) {
+    let t = 0;
+    document.getElementById(containerId)?.querySelectorAll('.ws-extra-row').forEach(r => {
+      const nums = r.querySelectorAll('input[type="number"]');
+      t += (parseFloat(nums[0]?.value)||0) * (parseFloat(nums[1]?.value)||0);
+    });
+    return t;
+  }
+
+  window.wsAddRow = function(containerId, calcFn) {
+    const id = 'wsrow-'+(++wsRowN);
+    const div = document.createElement('div');
+    div.className = 'extra-row ws-extra-row'; div.id = id;
+    div.innerHTML = `
+      <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Descrição</span>
+        <input class="ws-calc-input" type="text" placeholder="Ex: Caneta, Azulejo..." oninput="${calcFn}()"></div>
+      <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Qtd</span>
+        <input class="ws-calc-input" type="number" min="0" value="1" oninput="${calcFn}()"></div>
+      <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Unit. R$</span>
+        <input class="ws-calc-input" type="number" min="0" step=".01" value="0" oninput="${calcFn}()"></div>
+      <button class="btn-rm-ws" onclick="wsRmRow('${id}','${calcFn}')">×</button>`;
+    document.getElementById(containerId).appendChild(div);
+    window[calcFn]();
+  };
+  window.wsRmRow = function(id, calcFn) { document.getElementById(id)?.remove(); window[calcFn](); };
+
+  window.wsAddPorcelana = function() {
+    const id = 'wspc-'+(++wsPorcN);
+    const div = document.createElement('div');
+    div.className = 'extra-row ws-extra-row'; div.id = id;
+    div.innerHTML = `
+      <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Tipo</span>
+        <input class="ws-calc-input" type="text" placeholder="Ex: Caneca, Prato..." oninput="calcPr()"></div>
+      <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Qtd</span>
+        <input class="ws-calc-input" type="number" min="0" value="10" oninput="calcPr()"></div>
+      <div><span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:5px;">Unit. R$</span>
+        <input class="ws-calc-input" type="number" min="0" step=".01" value="0" oninput="calcPr()"></div>
+      <button class="btn-rm-ws" onclick="wsRmRow('${id}','calcPr')">×</button>`;
+    document.getElementById('pr-porcs').appendChild(div);
+    calcPr();
+  };
+
+  window.showWs = function(id, btn) {
+    document.querySelectorAll('.ws-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (btn) btn.classList.add('active');
+  };
+
+  window.calcC = function() {
+    const alu = wsN('c-alu');
+    const ps = wsN('c-pq') * wsN('c-pv'); wsSet('c-ps', wsBrl(ps));
+    const ts = wsN('c-tq') * wsN('c-tv'); wsSet('c-ts', wsBrl(ts));
+    const sac = 12 * alu;                 wsSet('c-sac', wsBrl(sac));
+    const extras = wsRowsTotal('c-extras');
+    const gOn = wsCk('c-gon'), gSub = gOn ? wsN('c-gh') * 400 : 0;
+    wsSet('c-gsub', wsBrl(gSub)); wsArtistRow('c-gr', gOn);
+    const aOn = wsCk('c-aon'), aN = wsN('c-an'), aSub = aOn ? aN * 300 : 0;
+    wsSet('c-asub', wsBrl(aSub)); wsArtistRow('c-ar', aOn);
+    const artN = (gOn?1:0) + (aOn?aN:0);
+    const alm = 50 * artN;
+    const trp = aOn ? 50 * aN : 0;
+    wsSet('c-alm', wsBrl(alm)); wsSet('c-trp', wsBrl(trp));
+    costC = ps + ts + 50 + sac + extras + gSub + aSub + alm + trp;
+    wsSet('c-tot', wsBrl(costC));
+    wsShowResults('c-', costC, wsN('c-mg'), alu);
+  };
+  window.calcCfV = function() { const v = wsN('c-venda'); if (v > 0) wsShowFromVenda('c-', costC, v, wsN('c-alu')); };
+
+  window.calcP = function() {
+    const alu = wsN('p-alu');
+    const ps  = wsN('p-pq') * wsN('p-pv'); wsSet('p-ps', wsBrl(ps));
+    const que = 1.5 * alu;                 wsSet('p-que', wsBrl(que));
+    const sac = 12  * alu;                 wsSet('p-sac', wsBrl(sac));
+    const gOn = wsCk('p-gon'), gSub = gOn ? wsN('p-gh') * 400 : 0;
+    wsSet('p-gsub', wsBrl(gSub)); wsArtistRow('p-gr', gOn);
+    const mOn = wsCk('p-mon'), mSub = mOn ? wsN('p-mh') * 400 : 0;
+    wsSet('p-msub', wsBrl(mSub)); wsArtistRow('p-mr', mOn);
+    const aOn = wsCk('p-aon'), aN = wsN('p-an'), aSub = aOn ? aN * 300 : 0;
+    wsSet('p-asub', wsBrl(aSub)); wsArtistRow('p-ar', aOn);
+    const artN = (gOn?1:0) + (mOn?1:0) + (aOn?aN:0);
+    const alm = 50 * artN;
+    const trp = aOn ? 50 * aN : 0;
+    wsSet('p-alm', wsBrl(alm)); wsSet('p-trp', wsBrl(trp));
+    costP = ps + 50 + que + sac + gSub + mSub + aSub + alm + trp;
+    wsSet('p-tot', wsBrl(costP));
+    wsShowResults('p-', costP, wsN('p-mg'), alu);
+  };
+  window.calcPfV = function() { const v = wsN('p-venda'); if (v > 0) wsShowFromVenda('p-', costP, v, wsN('p-alu')); };
+
+  window.calcPr = function() {
+    const alu   = wsN('pr-alu');
+    const porcs = wsRowsTotal('pr-porcs');
+    const que   = 1.5 * alu; wsSet('pr-que', wsBrl(que));
+    const gOn = wsCk('pr-gon'), gSub = gOn ? wsN('pr-gh') * 400 : 0;
+    wsSet('pr-gsub', wsBrl(gSub)); wsArtistRow('pr-gr', gOn);
+    const mOn = wsCk('pr-mon'), mSub = mOn ? wsN('pr-mh') * 400 : 0;
+    wsSet('pr-msub', wsBrl(mSub)); wsArtistRow('pr-mr', mOn);
+    const aOn = wsCk('pr-aon'), aN = wsN('pr-an'), aSub = aOn ? aN * 300 : 0;
+    wsSet('pr-asub', wsBrl(aSub)); wsArtistRow('pr-ar', aOn);
+    costPr = porcs + 50 + que + gSub + mSub + aSub + 200 + 200;
+    wsSet('pr-tot', wsBrl(costPr));
+    wsShowResults('pr-', costPr, wsN('pr-mg'), alu);
+  };
+  window.calcPrfV = function() { const v = wsN('pr-venda'); if (v > 0) wsShowFromVenda('pr-', costPr, v, wsN('pr-alu')); };
+
+  // Init com uma porcelana padrão e cálculos iniciais
+  wsAddPorcelana();
+  calcC(); calcP(); calcPr();
+})();
 </script>
 </body>
 </html>
