@@ -2245,6 +2245,73 @@ function renderWeek(week, hoje) {
   return html;
 }
 
+function renderMarcelaWeek(week, hoje) {
+  const weekIsos = week.map(d=>d.date.toISOString().slice(0,10));
+  const bars = [];
+  for (const p of pedidos) {
+    if (p.status==='entregue') continue;
+    if (p.responsavel!=='marcela') continue;   // Marcela só vê pedidos dela
+    const prodSet = getProductionDateSet(p);
+    let firstCol=-1, lastCol=-1;
+    for (let col=0;col<7;col++) {
+      const iso = weekIsos[col];
+      if (prodSet.has(iso) && isWorkingDay(week[col].date)) {
+        if (firstCol===-1) firstCol=col;
+        lastCol=col;
+      }
+    }
+    if (firstCol!==-1) bars.push({p, firstCol, lastCol, slot:0});
+  }
+  bars.sort((a,b)=>a.firstCol-b.firstCol);
+  assignSlots(bars);
+
+  const maxSlot = bars.length ? Math.max(...bars.map(b=>b.slot)) : -1;
+  const barAreaHeight = maxSlot>=0 ? (maxSlot+1)*13 + 4 : 0;
+  const weekHeight = Math.max(72, 38+barAreaHeight);
+
+  let html = `<div class="cal-week" style="min-height:${weekHeight}px;">`;
+
+  for (const {date,otherMonth} of week) {
+    const iso = date.toISOString().slice(0,10);
+    const dow = date.getDay();
+    const isToday = date.getTime()===hoje.getTime();
+    const isWknd  = dow===0||dow===6;
+    const isCurso = !otherMonth && (dow===3||dow===4);
+    const cursoTag = isCurso ? `<div class="cal-curso">📚 14h–16h Curso</div>` : '';
+    const dayPeds = pedidos.filter(p=>p.dataEntrega===iso && p.responsavel==='marcela');
+    const dots = dayPeds.map(p=>{
+      const st=getStatus(p);
+      return `<div class="dot ${p.dataFixa?'fixa':st}" title="${p.cliente}"></div>`;
+    }).join('');
+    html+=`<div class="cal-day${otherMonth?' other-month':''}${isToday?' today':''}${isWknd&&!otherMonth?' weekend':''}${isCurso?' curso-day':''}"
+      style="min-height:${weekHeight}px;">
+      <div class="day-num">${date.getDate()}</div>
+      <div class="day-dots">${dots}</div>
+      ${cursoTag}
+    </div>`;
+  }
+
+  for (const bar of bars) {
+    const p = bar.p;
+    const st = getStatus(p);
+    const color     = p.dataFixa ? '#c8a000' : (STATUS_COLOR[st]||STATUS_COLOR[p.status]||'#9a7060');
+    const textColor = p.dataFixa ? '#a75500' : '#fff';
+    const leftPct   = (bar.firstCol/7*100).toFixed(2);
+    const widthPct  = ((bar.lastCol-bar.firstCol+1)/7*100).toFixed(2);
+    const topPx     = 36 + bar.slot*13;
+    const pecas     = p.pecas || [];
+    const label     = p.numeroBling ? `#${p.numeroBling} ${p.cliente}` : p.cliente;
+    const titleText = `${p.cliente}${pecas.length>1?' ('+pecas.length+' peças)':' — '+(pecas[0]?.descricao||'')}`;
+    html+=`<div class="prod-bar"
+      style="left:calc(${leftPct}% + 3px);width:calc(${widthPct}% - 6px);top:${topPx}px;background:${color};color:${textColor};border-radius:4px;"
+      onclick="openDetail('${p.id}')"
+      title="${titleText}">${label}</div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
 function selectDay(iso) {
   selectedDay = selectedDay===iso ? null : iso;
   renderCalendar();
@@ -2319,23 +2386,7 @@ function renderMarcelaCalendar() {
   // ── Calendar grid ──
   const weeks = getCalendarWeeks(calYear, calMonth);
   let html='';
-  for (const week of weeks) {
-    html+=`<div class="cal-week" style="min-height:72px;">`;
-    for (const {date, otherMonth} of week) {
-      const iso = date.toISOString().slice(0,10);
-      const dow  = date.getDay(); // 3=Qua, 4=Qui
-      const isToday  = date.getTime()===hoje.getTime();
-      const isWknd   = dow===0||dow===6;
-      const isCurso  = !otherMonth && (dow===3||dow===4);
-      const cursoTag = isCurso ? `<div class="cal-curso">📚 14h–16h Curso</div>` : '';
-      html+=`<div class="cal-day${otherMonth?' other-month':''}${isToday?' today':''}${isWknd&&!otherMonth?' weekend':''}${isCurso?' curso-day':''}"
-        style="min-height:72px;">
-        <div class="day-num">${date.getDate()}</div>
-        ${cursoTag}
-      </div>`;
-    }
-    html+=`</div>`;
-  }
+  for (const week of weeks) html += renderMarcelaWeek(week, hoje);
   document.getElementById('cal-days-m').innerHTML = html;
   renderMonthOrders(calYear, calMonth, 'marcela');
 }
