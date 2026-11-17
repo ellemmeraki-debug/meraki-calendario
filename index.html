@@ -1322,8 +1322,9 @@ function calcDates() {
     const inicio = subWorkingDays(data, dias);
     document.getElementById('start-preview').textContent =
       `📅 Iniciar produção até: ${isoToDisplay(inicio)} (${dias} dias úteis antes)`;
+    const isMarcela = document.getElementById('f-responsavel').value === 'marcela';
     const count = pedidos.filter(p => p.dataEntrega===data && p.id!==editId).length;
-    document.getElementById('limit-warn').style.display = count>=3 ? '' : 'none';
+    document.getElementById('limit-warn').style.display = (!isMarcela && count>=3) ? '' : 'none';
   } else {
     document.getElementById('start-preview').textContent = '📅 Iniciar produção até: —';
     document.getElementById('limit-warn').style.display = 'none';
@@ -1448,7 +1449,7 @@ function renderFormPecas() {
       </div>
       <div class="form-grid2">
         <div class="form-row">
-          <label>Custo (R$) *</label>
+          <label>Custo (R$)</label>
           <input id="pi-custo-${i}" type="number" step="0.01" placeholder="0,00"
             value="${peca.custo || ''}" oninput="updatePecaTotals()">
         </div>
@@ -2080,11 +2081,12 @@ function salvarPedido() {
 
   const pecas = readFormPecas();
   if (pecas.length === 0) { alert('Adicione pelo menos 1 peça.'); return; }
-  const invalidas = pecas.filter(x => !x.descricao || !(x.custo > 0));
-  if (invalidas.length > 0) { alert('Preencha a Descrição e o Custo de todas as peças.'); return; }
+  const invalidas = pecas.filter(x => !x.descricao);
+  if (invalidas.length > 0) { alert('Preencha a Descrição de todas as peças.'); return; }
 
+  const isMarcela2 = document.getElementById('f-responsavel').value === 'marcela';
   const count = pedidos.filter(p=>p.dataEntrega===data&&p.id!==editId).length;
-  if (count>=3&&!confirm(`⚠️ Já existem ${count} pedidos para ${isoToDisplay(data)}. Confirmar mesmo assim?`)) return;
+  if (!isMarcela2 && count>=3&&!confirm(`⚠️ Já existem ${count} pedidos para ${isoToDisplay(data)}. Confirmar mesmo assim?`)) return;
 
   const id = editId || Date.now().toString(36)+Math.random().toString(36).slice(2,5);
   const antigo = editId ? pedidos.find(p=>p.id===id) : null;
@@ -2180,6 +2182,7 @@ function renderWeek(week, hoje) {
   const bars = [];
   for (const p of pedidos) {
     if (p.status==='entregue') continue;
+    if (p.responsavel==='marcela') continue;   // Gabi só vê pedidos dela
     const prodSet = getProductionDateSet(p);
     let firstCol=-1, lastCol=-1;
     for (let col=0;col<7;col++) {
